@@ -1,36 +1,141 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🏥 MedCare — Patient Portal (Next.js)
 
-## Getting Started
+A modern patient-facing frontend for the Hospital Management System
+Spring Boot API — book appointments, view medical records, prescriptions
+and bills.
 
-First, run the development server:
+## Tech Stack
+- Next.js 14 (App Router) + TypeScript
+- Tailwind CSS (custom design tokens — teal/amber/coral palette)
+- Axios (with JWT interceptor)
+- lucide-react icons
+
+## 1. Install dependencies
+
+```bash
+npm install
+```
+
+## 2. Configure the API URL
+
+Copy the example env file:
+
+```bash
+cp .env.local.example .env.local
+```
+
+Edit `.env.local`:
+
+```
+# Local backend
+NEXT_PUBLIC_API_URL=http://localhost:8080
+```
+
+## 3. Run locally
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Visit `http://localhost:3000`. Make sure your Spring Boot backend is
+running on `http://localhost:8080` (or update the env var above).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 4. Try it out
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. Go to `/register`, sign up as a patient.
+2. **Important:** your `Patient` profile (medical details) is created
+   by an ADMIN/RECEPTIONIST in the current backend — see note below.
+3. Once your profile is linked, log in and you'll land on the dashboard.
 
-## Learn More
+## ⚠️ Backend note — patient self-service
 
-To learn more about Next.js, take a look at the following resources:
+The current `PatientController` only allows `ADMIN` / `RECEPTIONIST`
+to create or update a `Patient` record:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```java
+@PostMapping
+@PreAuthorize("hasAnyRole('ADMIN','RECEPTIONIST')")
+public ResponseEntity<PatientResponseDTO> createPatient(...) { ... }
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+That means a patient who just registered has a `User` account but no
+linked `Patient` profile yet — the portal shows a friendly
+"profile is being set up" screen in this case (see
+`app/(portal)/layout.tsx`).
 
-## Deploy on Vercel
+**To make this fully self-service**, consider adding to
+`PatientController`:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```java
+// Let a logged-in patient create their own profile once
+@PostMapping("/me")
+@PreAuthorize("hasRole('PATIENT')")
+public ResponseEntity<PatientResponseDTO> createOwnProfile(
+        @Valid @RequestBody PatientRequestDTO dto,
+        Authentication authentication) {
+    // look up the User by authentication.getName() (email),
+    // force dto.userId to that user's id server-side,
+    // then call the same service method used by ADMIN/RECEPTIONIST
+}
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+and similarly allow `PATIENT` to `PUT` their *own* record. This is a
+backend change — not required to demo the frontend, but worth doing if
+you want genuine self-service onboarding.
+
+## 5. Deploy to Vercel
+
+1. Push this project to its own GitHub repo (e.g. `hms-frontend`).
+2. Go to [vercel.com](https://vercel.com) → **New Project** → import
+   the repo.
+3. Framework preset: **Next.js** (auto-detected).
+4. Add an environment variable:
+   - `NEXT_PUBLIC_API_URL` = `https://your-backend.onrender.com`
+5. Deploy.
+
+## ⚠️ CORS — required backend change
+
+Your Spring Boot API needs to allow requests from your Vercel domain.
+Add a CORS config bean (if you don't already have one):
+
+```java
+@Configuration
+public class CorsConfig {
+    @Bean
+    public WebMvcConfigurer corsConfigurer() {
+        return new WebMvcConfigurer() {
+            @Override
+            public void addCorsMappings(CorsRegistry registry) {
+                registry.addMapping("/api/**")
+                    .allowedOrigins(
+                        "http://localhost:3000",
+                        "https://your-frontend.vercel.app"
+                    )
+                    .allowedMethods("GET","POST","PUT","DELETE","OPTIONS")
+                    .allowedHeaders("*")
+                    .allowCredentials(true);
+            }
+        };
+    }
+}
+```
+
+Without this, the deployed frontend's requests to Render will be
+blocked by the browser with a CORS error.
+
+## Project structure
+
+```
+app/
+  login/              → sign in
+  register/           → patient sign up
+  (portal)/           → auth-guarded shell (sidebar + topbar)
+    dashboard/         → stats + upcoming appointment tickets
+    doctors/            → search & book doctors
+    appointments/        → upcoming / past / cancelled tabs
+    records/              → diagnosis + prescriptions timeline
+    bills/                  → billing history & totals
+    profile/                 → patient details (read-only)
+components/           → shared UI (Sidebar, Topbar, cards, modal…)
+lib/                   → api client, auth context, types, formatters
+```
