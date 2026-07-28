@@ -1,14 +1,17 @@
 import axios from "axios";
 import type {
   AppointmentResponse,
+  AppointmentStatus,
   AuthResponse,
   BillResponse,
   DepartmentResponse,
   DoctorResponse,
+  MedicalRecordRequest,
   MedicalRecordResponse,
   Page,
   PatientFileResponse,
   PatientResponse,
+  PrescriptionRequest,
   Role,
 } from "./types";
 
@@ -187,33 +190,112 @@ export async function uploadPatientFile(payload: {
   return data;
 }
 
+// ============================================================
+// Doctor Portal
+// ============================================================
 
-export async function createPatientProfile(payload: {
-  dateOfBirth: string;
-  bloodGroup: string;
-  address: string;
-  emergencyContact: string;
-  emergencyContactName: string;
-  medicalHistory?: string;
+export async function getDoctorByUserId(userId: number) {
+  const { data } = await api.get<DoctorResponse>(`/doctors/user/${userId}`);
+  return data;
+}
+
+export async function toggleDoctorAvailability(
+  doctorId: number,
+  available: boolean
+) {
+  const { data } = await api.put<DoctorResponse>(
+    `/doctors/${doctorId}/availability`,
+    { available }
+  );
+  return data;
+}
+
+export async function getDoctorAppointments(
+  doctorId: number,
+  page = 0,
+  size = 100
+) {
+  const { data } = await api.get<Page<AppointmentResponse>>(
+    `/appointments/doctor/${doctorId}`,
+    { params: { page, size } }
+  );
+  return data;
+}
+
+
+export async function getDoctorSchedule(doctorId: number, date: string) {
+  const { data } = await api.get<AppointmentResponse[]>(
+    `/appointments/doctor/${doctorId}/schedule`,
+    { params: { date } }
+  );
+  return data;
+}
+
+export async function updateAppointmentStatus(
+  id: number,
+  status: AppointmentStatus
+) {
+  const { data } = await api.put<AppointmentResponse>(
+    `/appointments/${id}/status`,
+    { status }
+  );
+  return data;
+}
+
+export async function getPatientById(id: number) {
+  const { data } = await api.get<PatientResponse>(`/patients/${id}`);
+  return data;
+}
+
+export async function searchPatients(params: {
+  name?: string;
+  bloodGroup?: string;
+  email?: string;
+  page?: number;
+  size?: number;
 }) {
-  const { data } = await api.post<PatientResponse>(
-    "/patients/me",
+  const { data } = await api.get<Page<PatientResponse>>("/patients/search", {
+    params,
+  });
+  return data;
+}
+
+export async function getRecordByAppointment(appointmentId: number) {
+  const { data } = await api.get<MedicalRecordResponse>(
+    `/records/appointment/${appointmentId}`
+  );
+  return data;
+}
+
+export async function createMedicalRecord(payload: MedicalRecordRequest) {
+  const { data } = await api.post<MedicalRecordResponse>(
+    "/records",
     payload
   );
   return data;
 }
 
-export async function updatePatientProfile(payload: {
-  dateOfBirth: string;
-  bloodGroup: string;
-  address: string;
-  emergencyContact: string;
-  emergencyContactName: string;
-  medicalHistory?: string;
-}) {
-  const { data } = await api.put<PatientResponse>(
-    "/patients/me",
+export async function updateMedicalRecord(
+  id: number,
+  payload: Partial<MedicalRecordRequest>
+) {
+  const { data } = await api.put<MedicalRecordResponse>(
+    `/records/${id}`,
     payload
   );
+  return data;
+}
+
+export async function createPrescription(payload: PrescriptionRequest) {
+  const { data } = await api.post(`/prescriptions`, payload);
+  return data;
+}
+
+export async function deletePrescription(id: number) {
+  await api.delete(`/prescriptions/${id}`);
+}
+
+export async function getDoctorById(id: number) {
+  const { data } = await api.get<DoctorResponse>(`/doctors/${id}`);
   return data;
 }

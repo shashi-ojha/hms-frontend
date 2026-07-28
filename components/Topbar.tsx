@@ -5,12 +5,20 @@ import { ChevronDown, LogOut, UserCircle2 } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 import { initials } from "@/lib/format";
 
-export function Topbar({ title, subtitle }: { title: string; subtitle?: string }) {
+export function Topbar({
+  title,
+  subtitle,
+  profileHref = "/profile",
+}: {
+  title: string;
+  subtitle?: string;
+  profileHref?: string;
+}) {
   const { user, logout } = useAuth();
   const [open, setOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-20 flex items-center justify-between border-b border-ink-100 bg-[#F7FAF9]/90 px-6 py-5 backdrop-blur lg:px-10">
+    <header className="sticky top-0 z-20 flex items-center justify-between border-b border-ink-100 bg-[#F7FAF9] px-6 py-5 lg:px-10">
       <div>
         <h1 className="font-display text-xl font-semibold text-ink-900 sm:text-2xl">
           {title}
@@ -42,7 +50,7 @@ export function Topbar({ title, subtitle }: { title: string; subtitle?: string }
             />
             <div className="absolute right-0 z-20 mt-2 w-48 overflow-hidden rounded-2xl border border-ink-100 bg-white py-1.5 shadow-card">
               <a
-                href="/profile"
+                href={profileHref}
                 className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-ink-700 hover:bg-ink-100"
               >
                 <UserCircle2 className="h-4 w-4" />

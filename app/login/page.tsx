@@ -25,15 +25,20 @@ export default function LoginPage() {
     setLoading(true);
     try {
       const auth = await login(email, password);
-      if (auth.role !== "PATIENT") {
-        setError(
-          "This portal is for patients only. Please use the staff portal for your role."
-        );
-        setLoading(false);
+      if (auth.role === "PATIENT") {
+        setSession(auth);
+        router.replace("/dashboard");
         return;
       }
-      setSession(auth);
-      router.replace("/dashboard");
+      if (auth.role === "DOCTOR") {
+        setSession(auth);
+        router.replace("/doctor/dashboard");
+        return;
+      }
+      setError(
+        "This portal doesn't have a screen for your role yet. Please check back soon."
+      );
+      setLoading(false);
     } catch (err) {
       setError(apiErrorMessage(err, "Couldn't sign you in. Check your details and try again."));
     } finally {

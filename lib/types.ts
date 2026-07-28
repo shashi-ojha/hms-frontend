@@ -129,3 +129,19 @@ export interface Page<T> {
   first: boolean;
   last: boolean;
 } 
+
+// ---------- Doctor portal request types ----------
+export interface MedicalRecordRequest {
+  appointmentId: number;
+  diagnosis: string;
+  treatment: string;
+  notes?: string;
+}
+
+export interface PrescriptionRequest {
+  medicalRecordId: number;
+  medicineName: string;
+  dosage: string;
+  duration: string;
+  instructions?: string;
+}
