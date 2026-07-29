@@ -1,3 +1,10 @@
+const ROLE_PREFIXES: Record<string, string> = {
+    DOCTOR: "Dr.",
+    ADMIN: "Admin",
+    NURSE: "Nurse",
+    PATIENT: "",
+};
+
 export function formatDate(dateStr: string) {
   if (!dateStr) return "—";
   const d = new Date(dateStr);
@@ -45,3 +52,9 @@ export function initials(name: string) {
   const last = parts.length > 1 ? parts[parts.length - 1][0] : "";
   return (first + last).toUpperCase();
 }
+
+export const getDisplayName = (name: string, role: string): string => {
+    const prefix = ROLE_PREFIXES[role];
+    return prefix ? `${prefix} ${name}` : name;
+};
+

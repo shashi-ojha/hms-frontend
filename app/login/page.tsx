@@ -35,6 +35,11 @@ export default function LoginPage() {
         router.replace("/doctor/dashboard");
         return;
       }
+      if (auth.role === "ADMIN") {
+        setSession(auth);
+        router.replace("/admin/dashboard");
+        return;
+      }
       setError(
         "This portal doesn't have a screen for your role yet. Please check back soon."
       );

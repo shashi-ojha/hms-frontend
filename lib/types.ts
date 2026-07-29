@@ -128,7 +128,7 @@ export interface Page<T> {
   size: number;
   first: boolean;
   last: boolean;
-} 
+}
 
 // ---------- Doctor portal request types ----------
 export interface MedicalRecordRequest {
@@ -144,4 +144,54 @@ export interface PrescriptionRequest {
   dosage: string;
   duration: string;
   instructions?: string;
+}
+
+// ---------- Admin portal types ----------
+export interface DashboardResponse {
+  totalDoctors: number;
+  totalPatients: number;
+  totalDepartments: number;
+  totalAppointments: number;
+  pendingAppointments: number;
+  confirmedAppointments: number;
+  completedAppointments: number;
+  cancelledAppointments: number;
+  totalRevenue: number;
+  pendingBillsCount: number;
+  pendingBillsAmount: number;
+}
+
+export interface DepartmentRequest {
+  name: string;
+  description: string;
+  active?: boolean;
+}
+
+export interface DoctorRequest {
+  userId: number;
+  departmentId: number;
+  specialization: string;
+  experienceYears: number;
+  consultationFee: number;
+  bio?: string;
+  available?: boolean;
+}
+
+export interface DoctorOnboardRequest {
+  name: string;
+  email: string;
+  password: string;
+  phone: string;
+  departmentId: number;
+  specialization: string;
+  experienceYears: number;
+  consultationFee: number;
+  bio?: string;
+}
+
+export interface UserSummary {
+  id: number;
+  name: string;
+  email: string;
+  role: Role;
 }

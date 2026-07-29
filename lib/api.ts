@@ -4,7 +4,11 @@ import type {
   AppointmentStatus,
   AuthResponse,
   BillResponse,
+  DashboardResponse,
+  DepartmentRequest,
   DepartmentResponse,
+  DoctorOnboardRequest,
+  DoctorRequest,
   DoctorResponse,
   MedicalRecordRequest,
   MedicalRecordResponse,
@@ -13,6 +17,7 @@ import type {
   PatientResponse,
   PrescriptionRequest,
   Role,
+  UserSummary,
 } from "./types";
 
 export const API_BASE_URL =
@@ -222,7 +227,6 @@ export async function getDoctorAppointments(
   return data;
 }
 
-
 export async function getDoctorSchedule(doctorId: number, date: string) {
   const { data } = await api.get<AppointmentResponse[]>(
     `/appointments/doctor/${doctorId}/schedule`,
@@ -295,7 +299,80 @@ export async function deletePrescription(id: number) {
   await api.delete(`/prescriptions/${id}`);
 }
 
-export async function getDoctorById(id: number) {
-  const { data } = await api.get<DoctorResponse>(`/doctors/${id}`);
+// ============================================================
+// Admin Portal
+// ============================================================
+
+export async function getDashboardStats() {
+  const { data } = await api.get<DashboardResponse>("/dashboard/stats");
+  return data;
+}
+
+export async function createDepartment(payload: DepartmentRequest) {
+  const { data } = await api.post<DepartmentResponse>("/departments", payload);
+  return data;
+}
+
+export async function updateDepartment(id: number, payload: DepartmentRequest) {
+  const { data } = await api.put<DepartmentResponse>(
+    `/departments/${id}`,
+    payload
+  );
+  return data;
+}
+
+export async function deleteDepartment(id: number) {
+  await api.delete(`/departments/${id}`);
+}
+
+export async function onboardDoctor(payload: DoctorOnboardRequest) {
+  const { data } = await api.post<DoctorResponse>("/doctors/onboard", payload);
+  return data;
+}
+
+export async function getAllDoctors() {
+  const { data } = await api.get<DoctorResponse[]>("/doctors");
+  return data;
+}
+
+export async function createDoctor(payload: DoctorRequest) {
+  const { data } = await api.post<DoctorResponse>("/doctors", payload);
+  return data;
+}
+
+export async function updateDoctor(id: number, payload: Partial<DoctorRequest>) {
+  const { data } = await api.put<DoctorResponse>(`/doctors/${id}`, payload);
+  return data;
+}
+
+export async function deleteDoctor(id: number) {
+  await api.delete(`/doctors/${id}`);
+}
+
+export async function getAllPatients(page = 0, size = 100) {
+  const { data } = await api.get<Page<PatientResponse>>("/patients", {
+    params: { page, size },
+  });
+  return data;
+}
+
+export async function getAllBills(page = 0, size = 100) {
+  const { data } = await api.get<Page<BillResponse>>("/bills", {
+    params: { page, size },
+  });
+  return data;
+}
+
+export async function payBill(id: number, paymentMethod: string) {
+  const { data } = await api.put<BillResponse>(`/bills/${id}/pay`, {
+    paymentMethod,
+  });
+  return data;
+}
+
+export async function getUsersByRole(role: Role) {
+  const { data } = await api.get<UserSummary[]>("/users", {
+    params: { role },
+  });
   return data;
 }
