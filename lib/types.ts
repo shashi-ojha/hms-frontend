@@ -195,3 +195,19 @@ export interface UserSummary {
   email: string;
   role: Role;
 }
+
+export interface PatientRequest {
+  userId: number;
+  dateOfBirth: string;
+  bloodGroup: string;
+  address: string;
+  emergencyContact: string;
+  emergencyContactName: string;
+  medicalHistory?: string;
+}
+
+export interface BillRequest {
+  appointmentId: number;
+  additionalCharges?: number;
+  notes?: string;
+}

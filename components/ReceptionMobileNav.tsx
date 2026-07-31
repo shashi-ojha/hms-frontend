@@ -4,24 +4,22 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
-  Stethoscope,
-  Building2,
-  Users,
-  Receipt,
+  UserPlus,
+  CalendarPlus,
   CalendarDays,
+  Receipt,
 } from "lucide-react";
 import { cn } from "@/lib/cn";
 
 const nav = [
-  { href: "/admin/dashboard", label: "Home", icon: LayoutDashboard },
-  { href: "/admin/appointments", label: "Visits", icon: CalendarDays },
-  { href: "/admin/doctors", label: "Doctors", icon: Stethoscope },
-  { href: "/admin/departments", label: "Depts", icon: Building2 },
-  { href: "/admin/patients", label: "Patients", icon: Users },
-  { href: "/admin/bills", label: "Bills", icon: Receipt },
+  { href: "/reception/dashboard", label: "Home", icon: LayoutDashboard },
+  { href: "/reception/register-patient", label: "Register", icon: UserPlus },
+  { href: "/reception/book-appointment", label: "Book", icon: CalendarPlus },
+  { href: "/reception/appointments", label: "Visits", icon: CalendarDays },
+  { href: "/reception/bills", label: "Bills", icon: Receipt },
 ];
 
-export function AdminMobileNav() {
+export function ReceptionMobileNav() {
   const pathname = usePathname();
   return (
     <nav className="fixed inset-x-0 bottom-0 z-30 flex border-t border-ink-100 bg-white lg:hidden">

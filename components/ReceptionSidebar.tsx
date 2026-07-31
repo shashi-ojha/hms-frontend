@@ -5,11 +5,10 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
-  Stethoscope,
-  Building2,
-  Users,
-  Receipt,
+  UserPlus,
+  CalendarPlus,
   CalendarDays,
+  Receipt,
   HeartPulse,
   LogOut,
 } from "lucide-react";
@@ -17,15 +16,14 @@ import { cn } from "@/lib/cn";
 import { useAuth } from "@/lib/auth-context";
 
 const nav = [
-  { href: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/admin/appointments", label: "Appointments", icon: CalendarDays },
-  { href: "/admin/doctors", label: "Doctors", icon: Stethoscope },
-  { href: "/admin/departments", label: "Departments", icon: Building2 },
-  { href: "/admin/patients", label: "Patients", icon: Users },
-  { href: "/admin/bills", label: "Bills", icon: Receipt },
+  { href: "/reception/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/reception/register-patient", label: "Register Patient", icon: UserPlus },
+  { href: "/reception/book-appointment", label: "Book Appointment", icon: CalendarPlus },
+  { href: "/reception/appointments", label: "Appointments", icon: CalendarDays },
+  { href: "/reception/bills", label: "Bills", icon: Receipt },
 ];
 
-export function AdminSidebar() {
+export function ReceptionSidebar() {
   const pathname = usePathname();
   const { logout } = useAuth();
   const navRef = useRef<HTMLDivElement>(null);
@@ -55,7 +53,7 @@ export function AdminSidebar() {
             MedCare
           </span>
           <span className="block text-[11px] font-medium uppercase tracking-wide text-ink-500">
-            Admin
+            Reception
           </span>
         </div>
       </div>

@@ -3,6 +3,7 @@ import type {
   AppointmentResponse,
   AppointmentStatus,
   AuthResponse,
+  BillRequest,
   BillResponse,
   DashboardResponse,
   DepartmentRequest,
@@ -14,6 +15,7 @@ import type {
   MedicalRecordResponse,
   Page,
   PatientFileResponse,
+  PatientRequest,
   PatientResponse,
   PrescriptionRequest,
   Role,
@@ -195,6 +197,33 @@ export async function uploadPatientFile(payload: {
   return data;
 }
 
+export async function deletePatientFile(id: number) {
+  await api.delete(`/files/${id}`);
+}
+
+// Files are served from a protected endpoint, so a plain <a href> won't
+// include the auth header. Fetch as a blob and trigger the download manually.
+export async function downloadPatientFileBlob(
+  downloadUrl: string,
+  filename: string
+) {
+  const token =
+    typeof window !== "undefined" ? localStorage.getItem("hms_token") : null;
+  const response = await fetch(`${API_BASE_URL}${downloadUrl}`, {
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+  });
+  if (!response.ok) throw new Error("Download failed");
+  const blob = await response.blob();
+  const url = window.URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  window.URL.revokeObjectURL(url);
+}
+
 // ============================================================
 // Doctor Portal
 // ============================================================
@@ -242,6 +271,23 @@ export async function updateAppointmentStatus(
   const { data } = await api.put<AppointmentResponse>(
     `/appointments/${id}/status`,
     { status }
+  );
+  return data;
+}
+
+export async function searchAllAppointments(params: {
+  status?: AppointmentStatus;
+  doctorId?: number;
+  patientId?: number;
+  departmentId?: number;
+  dateFrom?: string;
+  dateTo?: string;
+  page?: number;
+  size?: number;
+}) {
+  const { data } = await api.get<Page<AppointmentResponse>>(
+    "/appointments/search",
+    { params }
   );
   return data;
 }
@@ -325,11 +371,6 @@ export async function deleteDepartment(id: number) {
   await api.delete(`/departments/${id}`);
 }
 
-export async function onboardDoctor(payload: DoctorOnboardRequest) {
-  const { data } = await api.post<DoctorResponse>("/doctors/onboard", payload);
-  return data;
-}
-
 export async function getAllDoctors() {
   const { data } = await api.get<DoctorResponse[]>("/doctors");
   return data;
@@ -337,6 +378,11 @@ export async function getAllDoctors() {
 
 export async function createDoctor(payload: DoctorRequest) {
   const { data } = await api.post<DoctorResponse>("/doctors", payload);
+  return data;
+}
+
+export async function onboardDoctor(payload: DoctorOnboardRequest) {
+  const { data } = await api.post<DoctorResponse>("/doctors/onboard", payload);
   return data;
 }
 
@@ -374,5 +420,19 @@ export async function getUsersByRole(role: Role) {
   const { data } = await api.get<UserSummary[]>("/users", {
     params: { role },
   });
+  return data;
+}
+
+// ============================================================
+// Receptionist Portal
+// ============================================================
+
+export async function createPatientRecord(payload: PatientRequest) {
+  const { data } = await api.post<PatientResponse>("/patients", payload);
+  return data;
+}
+
+export async function createBill(payload: BillRequest) {
+  const { data } = await api.post<BillResponse>("/bills", payload);
   return data;
 }

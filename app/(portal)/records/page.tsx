@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { ChevronDown, FileText, Pill } from "lucide-react";
 import { Topbar } from "@/components/Topbar";
 import { Card } from "@/components/ui/Card";
+import { PatientFilesSection } from "@/components/PatientFilesSection";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { cn } from "@/lib/cn";
@@ -137,6 +138,10 @@ export default function RecordsPage() {
               );
             })}
           </div>
+        )}
+
+        {patient && (
+          <PatientFilesSection patientId={patient.id} canUpload canDelete />
         )}
       </div>
     </>
