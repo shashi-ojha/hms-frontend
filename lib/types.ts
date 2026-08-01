@@ -220,3 +220,11 @@ export interface BillRequest {
   additionalCharges?: number;
   notes?: string;
 }
+
+export interface PaymentOrder {
+  orderId: string;
+  amountInPaise: number;
+  currency: string;
+  keyId: string;
+  billId: number;
+}

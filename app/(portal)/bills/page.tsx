@@ -7,6 +7,7 @@ import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { PayNowButton } from "@/components/PayNowButton";
 import { useAuth } from "@/lib/auth-context";
 import { getPatientBills } from "@/lib/api";
 import { BillResponse } from "@/lib/types";
@@ -17,19 +18,19 @@ export default function BillsPage() {
   const [bills, setBills] = useState<BillResponse[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
+  async function load() {
     if (!patient) return;
-    getPatientBills(patient.id)
-      .then((data) =>
-        setBills(
-          [...data].sort(
-            (a, b) =>
-              new Date(b.createdAt).getTime() -
-              new Date(a.createdAt).getTime()
-          )
-        )
+    const data = await getPatientBills(patient.id);
+    setBills(
+      [...data].sort(
+        (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
       )
-      .finally(() => setLoading(false));
+    );
+  }
+
+  useEffect(() => {
+    load().finally(() => setLoading(false));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [patient]);
 
   const totalPaid = bills
@@ -64,7 +65,7 @@ export default function BillsPage() {
               <p className="font-display text-xl font-semibold text-ink-900">
                 {loading ? "—" : formatCurrency(totalPending)}
               </p>
-              <p className="text-xs text-ink-500">Pending — pay at reception</p>
+              <p className="text-xs text-ink-500">Pending — pay online below</p>
             </div>
           </Card>
         </div>
@@ -82,9 +83,9 @@ export default function BillsPage() {
             <div className="hidden grid-cols-[1fr_1fr_auto_auto_auto] gap-4 border-b border-ink-100 px-5 py-3 text-xs font-semibold uppercase tracking-wide text-ink-500 sm:grid">
               <span>Doctor</span>
               <span>Date</span>
-              <span className="text-right">Consultation</span>
               <span className="text-right">Total</span>
               <span className="text-right">Status</span>
+              <span className="text-right">Action</span>
             </div>
             <div className="divide-y divide-ink-100">
               {bills.map((b) => (
@@ -101,14 +102,20 @@ export default function BillsPage() {
                   <span className="text-sm text-ink-500">
                     {formatDate(b.createdAt)}
                   </span>
-                  <span className="hidden text-right text-sm text-ink-500 sm:block">
-                    {formatCurrency(b.consultationFee)}
-                  </span>
                   <span className="text-right font-display text-sm font-semibold text-ink-900">
                     {formatCurrency(b.totalAmount)}
                   </span>
-                  <span className="flex justify-end">
+                  <span className="flex justify-start sm:justify-end">
                     <Badge status={b.status}>{b.status}</Badge>
+                  </span>
+                  <span className="flex justify-end">
+                    {b.status === "PENDING" ? (
+                      <PayNowButton bill={b} onPaid={load} />
+                    ) : (
+                      <span className="text-xs text-ink-500">
+                        {b.paymentMethod || "—"}
+                      </span>
+                    )}
                   </span>
                 </div>
               ))}

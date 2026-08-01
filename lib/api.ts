@@ -17,6 +17,7 @@ import type {
   PatientFileResponse,
   PatientRequest,
   PatientResponse,
+  PaymentOrder,
   PrescriptionRequest,
   Role,
   UserSummary,
@@ -429,6 +430,23 @@ export async function payBill(id: number, paymentMethod: string) {
   const { data } = await api.put<BillResponse>(`/bills/${id}/pay`, {
     paymentMethod,
   });
+  return data;
+}
+
+export async function createPaymentOrder(billId: number) {
+  const { data } = await api.post<PaymentOrder>(
+    `/payments/create-order/${billId}`
+  );
+  return data;
+}
+
+export async function verifyPayment(payload: {
+  billId: number;
+  razorpayOrderId: string;
+  razorpayPaymentId: string;
+  razorpaySignature: string;
+}) {
+  const { data } = await api.post<string>("/payments/verify", payload);
   return data;
 }
 
