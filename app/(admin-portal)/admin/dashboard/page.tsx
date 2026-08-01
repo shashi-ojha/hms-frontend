@@ -14,6 +14,8 @@ import {
   BarChart,
   CartesianGrid,
   Cell,
+  Line,
+  LineChart,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -23,18 +25,48 @@ import { Topbar } from "@/components/Topbar";
 import { StatCard } from "@/components/ui/StatCard";
 import { Card } from "@/components/ui/Card";
 import { Skeleton } from "@/components/ui/Skeleton";
-import { getDashboardStats } from "@/lib/api";
+import { getDashboardStats, getAllBills } from "@/lib/api";
 import { DashboardResponse } from "@/lib/types";
 import { formatCurrency } from "@/lib/format";
 
 export default function AdminDashboardPage() {
   const [stats, setStats] = useState<DashboardResponse | null>(null);
   const [loading, setLoading] = useState(true);
+  const [revenueTrend, setRevenueTrend] = useState<{ month: string; revenue: number }[]>([]);
+  const [trendLoading, setTrendLoading] = useState(true);
 
   useEffect(() => {
     getDashboardStats()
       .then(setStats)
       .finally(() => setLoading(false));
+
+    getAllBills(0, 500)
+      .then((data) => {
+        const paid = data.content.filter((b) => b.status === "PAID");
+        const byMonth = new Map<string, number>();
+
+        // Build the last 6 months so the chart always has a consistent shape
+        const now = new Date();
+        for (let i = 5; i >= 0; i--) {
+          const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+          const key = d.toLocaleDateString("en-IN", { month: "short", year: "2-digit" });
+          byMonth.set(key, 0);
+        }
+
+        paid.forEach((b) => {
+          const d = new Date(b.createdAt);
+          const key = d.toLocaleDateString("en-IN", { month: "short", year: "2-digit" });
+          if (byMonth.has(key)) {
+            byMonth.set(key, (byMonth.get(key) || 0) + b.totalAmount);
+          }
+        });
+
+        setRevenueTrend(
+          Array.from(byMonth.entries()).map(([month, revenue]) => ({ month, revenue }))
+        );
+      })
+      .catch(() => setRevenueTrend([]))
+      .finally(() => setTrendLoading(false));
   }, []);
 
   const chartData = stats
@@ -142,6 +174,53 @@ export default function AdminDashboardPage() {
                     ))}
                   </Bar>
                 </BarChart>
+              </ResponsiveContainer>
+            </div>
+          )}
+        </Card>
+
+        <Card>
+          <h3 className="mb-4 font-display text-base font-semibold text-ink-900">
+            Revenue — last 6 months
+          </h3>
+          {trendLoading ? (
+            <Skeleton className="h-64 w-full" />
+          ) : (
+            <div className="h-64 w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={revenueTrend} margin={{ top: 8, right: 8, left: -16, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#F1F5F9" vertical={false} />
+                  <XAxis
+                    dataKey="month"
+                    tick={{ fontSize: 12, fill: "#64748B" }}
+                    axisLine={{ stroke: "#F1F5F9" }}
+                    tickLine={false}
+                  />
+                  <YAxis
+                    tick={{ fontSize: 12, fill: "#64748B" }}
+                    axisLine={false}
+                    tickLine={false}
+                    tickFormatter={(v) => `₹${v >= 1000 ? `${v / 1000}k` : v}`}
+                  />
+                  <Tooltip
+                    formatter={(value) =>
+                      typeof value === "number" ? formatCurrency(value) : ""
+                    }
+                    contentStyle={{
+                      borderRadius: 12,
+                      border: "1px solid #F1F5F9",
+                      fontSize: 13,
+                    }}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="revenue"
+                    stroke="#0F9488"
+                    strokeWidth={2.5}
+                    dot={{ fill: "#0F9488", r: 4 }}
+                    activeDot={{ r: 6 }}
+                  />
+                </LineChart>
               </ResponsiveContainer>
             </div>
           )}

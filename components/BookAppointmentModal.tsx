@@ -6,6 +6,7 @@ import { Modal } from "@/components/ui/Modal";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { Alert } from "@/components/ui/Alert";
+import { SlotPicker } from "@/components/SlotPicker";
 import { DoctorResponse } from "@/lib/types";
 import { formatCurrency, initials } from "@/lib/format";
 import { bookAppointment, apiErrorMessage } from "@/lib/api";
@@ -31,7 +32,7 @@ export function BookAppointmentModal({
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!doctor || !patient) return;
+    if (!doctor || !patient || !time) return;
     setError("");
     setLoading(true);
     try {
@@ -80,21 +81,24 @@ export function BookAppointmentModal({
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="grid grid-cols-2 gap-3">
-              <Input
-                type="date"
-                label="Date"
-                min={today}
-                value={date}
-                onChange={(e) => setDate(e.target.value)}
-                required
-              />
-              <Input
-                type="time"
-                label="Time"
+            <Input
+              type="date"
+              label="Date"
+              min={today}
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+              required
+            />
+
+            <div className="flex flex-col gap-1.5">
+              <label className="text-sm font-medium text-ink-700">
+                Available times
+              </label>
+              <SlotPicker
+                doctorId={doctor.id}
+                date={date}
                 value={time}
-                onChange={(e) => setTime(e.target.value)}
-                required
+                onChange={setTime}
               />
             </div>
 
@@ -114,7 +118,7 @@ export function BookAppointmentModal({
 
             {error && <Alert tone="error">{error}</Alert>}
 
-            <Button type="submit" className="w-full" loading={loading}>
+            <Button type="submit" className="w-full" loading={loading} disabled={!time}>
               <CalendarPlus className="h-4 w-4" />
               Confirm booking
             </Button>

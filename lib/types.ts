@@ -37,6 +37,9 @@ export interface DoctorResponse {
   consultationFee: number;
   bio: string;
   available: boolean;
+  workStartTime: string;
+  workEndTime: string;
+  slotDurationMinutes: number;
   createdAt: string;
 }
 
@@ -175,6 +178,9 @@ export interface DoctorRequest {
   consultationFee: number;
   bio?: string;
   available?: boolean;
+  workStartTime?: string;
+  workEndTime?: string;
+  slotDurationMinutes?: number;
 }
 
 export interface DoctorOnboardRequest {
@@ -187,6 +193,9 @@ export interface DoctorOnboardRequest {
   experienceYears: number;
   consultationFee: number;
   bio?: string;
+  workStartTime?: string;
+  workEndTime?: string;
+  slotDurationMinutes?: number;
 }
 
 export interface UserSummary {

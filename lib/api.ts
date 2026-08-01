@@ -78,6 +78,14 @@ export async function login(email: string, password: string) {
   return data;
 }
 
+export async function changePassword(payload: {
+  currentPassword: string;
+  newPassword: string;
+}) {
+  const { data } = await api.post<string>("/auth/change-password", payload);
+  return data;
+}
+
 export async function register(payload: {
   name: string;
   email: string;
@@ -109,6 +117,14 @@ export async function searchDoctors(params: {
   const { data } = await api.get<Page<DoctorResponse>>("/doctors/search", {
     params,
   });
+  return data;
+}
+
+export async function getAvailableSlots(doctorId: number, date: string) {
+  const { data } = await api.get<string[]>(
+    `/doctors/${doctorId}/available-slots`,
+    { params: { date } }
+  );
   return data;
 }
 

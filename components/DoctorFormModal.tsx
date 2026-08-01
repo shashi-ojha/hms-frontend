@@ -35,6 +35,11 @@ export function DoctorFormModal({
   const [consultationFee, setConsultationFee] = useState("");
   const [bio, setBio] = useState("");
 
+  // Working hours — drives slot-based scheduling
+  const [workStartTime, setWorkStartTime] = useState("09:00");
+  const [workEndTime, setWorkEndTime] = useState("17:00");
+  const [slotDurationMinutes, setSlotDurationMinutes] = useState("30");
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -53,6 +58,11 @@ export function DoctorFormModal({
       setExperienceYears(doctor ? String(doctor.experienceYears) : "");
       setConsultationFee(doctor ? String(doctor.consultationFee) : "");
       setBio(doctor?.bio || "");
+      setWorkStartTime(doctor?.workStartTime || "09:00");
+      setWorkEndTime(doctor?.workEndTime || "17:00");
+      setSlotDurationMinutes(
+        doctor?.slotDurationMinutes ? String(doctor.slotDurationMinutes) : "30"
+      );
       setError("");
     }
   }, [open, doctor, departments]);
@@ -62,6 +72,11 @@ export function DoctorFormModal({
     setError("");
     setLoading(true);
     try {
+      const scheduleFields = {
+        workStartTime,
+        workEndTime,
+        slotDurationMinutes: Number(slotDurationMinutes),
+      };
       if (doctor) {
         await updateDoctor(doctor.id, {
           userId: doctor.userId,
@@ -70,6 +85,7 @@ export function DoctorFormModal({
           experienceYears: Number(experienceYears),
           consultationFee: Number(consultationFee),
           bio,
+          ...scheduleFields,
         });
       } else {
         await onboardDoctor({
@@ -82,6 +98,7 @@ export function DoctorFormModal({
           experienceYears: Number(experienceYears),
           consultationFee: Number(consultationFee),
           bio,
+          ...scheduleFields,
         });
       }
       onSaved();
@@ -175,6 +192,39 @@ export function DoctorFormModal({
             required
           />
         </div>
+
+        <hr className="border-ink-100" />
+        <p className="text-xs font-semibold uppercase tracking-wide text-ink-500">
+          Working hours (drives available booking slots)
+        </p>
+        <div className="grid grid-cols-3 gap-3">
+          <Input
+            type="time"
+            label="Starts"
+            value={workStartTime}
+            onChange={(e) => setWorkStartTime(e.target.value)}
+            required
+          />
+          <Input
+            type="time"
+            label="Ends"
+            value={workEndTime}
+            onChange={(e) => setWorkEndTime(e.target.value)}
+            required
+          />
+          <Select
+            label="Slot length"
+            value={slotDurationMinutes}
+            onChange={(e) => setSlotDurationMinutes(e.target.value)}
+          >
+            <option value="15">15 min</option>
+            <option value="20">20 min</option>
+            <option value="30">30 min</option>
+            <option value="45">45 min</option>
+            <option value="60">60 min</option>
+          </Select>
+        </div>
+
         <div className="flex flex-col gap-1.5">
           <label className="text-sm font-medium text-ink-700">Bio (optional)</label>
           <textarea

@@ -1,42 +1,47 @@
 "use client";
 
-import { Award, Briefcase, IndianRupee, Mail, Phone, Stethoscope } from "lucide-react";
+import { Award, Briefcase, Clock, IndianRupee, Mail, Phone, Stethoscope } from "lucide-react";
 import { Topbar } from "@/components/Topbar";
 import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { useAuth } from "@/lib/auth-context";
-import { formatCurrency, initials } from "@/lib/format";
+import { formatCurrency, formatTime, initials } from "@/lib/format";
 
 export default function DoctorProfilePage() {
   const { user, doctor } = useAuth();
 
   const fields = [
-    { icon: Mail,        label: "Email",            value: doctor?.email          || user?.email },
-    { icon: Phone,       label: "Phone",            value: doctor?.phone          || user?.phone },
-    { icon: Stethoscope, label: "Department",       value: doctor?.departmentName               },
-    { icon: Briefcase,   label: "Specialization",   value: doctor?.specialization               },
-    { icon: Award,       label: "Experience",       value: doctor ? `${doctor.experienceYears} years` : "—" },
-    { icon: IndianRupee, label: "Consultation fee", value: doctor ? formatCurrency(doctor.consultationFee) : "—" },
+    { icon: Mail, label: "Email", value: doctor?.email || user?.email },
+    { icon: Phone, label: "Phone", value: doctor?.phone || user?.phone },
+    { icon: Stethoscope, label: "Department", value: doctor?.departmentName },
+    { icon: Briefcase, label: "Specialization", value: doctor?.specialization },
+    { icon: Award, label: "Experience", value: doctor ? `${doctor.experienceYears} years` : "—" },
+    {
+      icon: IndianRupee,
+      label: "Consultation fee",
+      value: doctor ? formatCurrency(doctor.consultationFee) : "—",
+    },
+    {
+      icon: Clock,
+      label: "Working hours",
+      value: doctor
+        ? `${formatTime(doctor.workStartTime)} – ${formatTime(doctor.workEndTime)} (${doctor.slotDurationMinutes}-min slots)`
+        : "—",
+    },
   ];
 
   return (
     <>
-      <Topbar
-        title="My profile"
-        subtitle="Your professional details"
-        profileHref="/doctor/profile"
-      />
+      <Topbar title="My profile" subtitle="Your professional details" profileHref="/doctor/profile" />
 
       <div className="space-y-6 px-6 pb-10 lg:px-10">
         <Card className="flex items-center gap-4">
           <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-brand-700 text-xl font-semibold text-white">
-            {/* ✅ doctorName instead of name */}
-            {initials(doctor?.doctorName || user?.name || "")}
+            {initials(user?.name || "")}
           </div>
           <div>
             <h2 className="font-display text-lg font-semibold text-ink-900">
-              {/* ✅ doctorName already has "Dr." prefix from backend */}
-              {doctor?.doctorName ?? `Dr. ${user?.name}`}
+              Dr. {user?.name}
             </h2>
             <Badge tone={doctor?.available ? "teal" : "slate"} className="mt-1.5">
               {doctor?.available ? "Available" : "Unavailable"}
@@ -56,9 +61,7 @@ export default function DoctorProfilePage() {
                 </div>
                 <div className="min-w-0">
                   <p className="text-xs text-ink-500">{label}</p>
-                  <p className="truncate text-sm font-medium text-ink-900">
-                    {value ?? "—"}
-                  </p>
+                  <p className="truncate text-sm font-medium text-ink-900">{value}</p>
                 </div>
               </div>
             ))}

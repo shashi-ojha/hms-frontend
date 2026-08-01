@@ -5,6 +5,7 @@ import { Search, User, Stethoscope, CalendarPlus, X } from "lucide-react";
 import { Topbar } from "@/components/Topbar";
 import { Card } from "@/components/ui/Card";
 import { Input } from "@/components/ui/Input";
+import { SlotPicker } from "@/components/SlotPicker";
 import { Button } from "@/components/ui/Button";
 import { Alert } from "@/components/ui/Alert";
 import { EmptyState } from "@/components/ui/EmptyState";
@@ -216,21 +217,23 @@ export default function BookAppointmentPage() {
               3. Pick date &amp; time
             </h3>
             <form onSubmit={handleBook} className="space-y-4">
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                <Input
-                  type="date"
-                  label="Date"
-                  min={today}
-                  value={date}
-                  onChange={(e) => setDate(e.target.value)}
-                  required
-                />
-                <Input
-                  type="time"
-                  label="Time"
+              <Input
+                type="date"
+                label="Date"
+                min={today}
+                value={date}
+                onChange={(e) => setDate(e.target.value)}
+                required
+              />
+              <div className="flex flex-col gap-1.5">
+                <label className="text-sm font-medium text-ink-700">
+                  Available times
+                </label>
+                <SlotPicker
+                  doctorId={selectedDoctor.id}
+                  date={date}
                   value={time}
-                  onChange={(e) => setTime(e.target.value)}
-                  required
+                  onChange={setTime}
                 />
               </div>
               <Input
@@ -240,7 +243,7 @@ export default function BookAppointmentPage() {
                 required
               />
               {error && <Alert tone="error">{error}</Alert>}
-              <Button type="submit" loading={booking}>
+              <Button type="submit" loading={booking} disabled={!time}>
                 Confirm booking
               </Button>
             </form>
