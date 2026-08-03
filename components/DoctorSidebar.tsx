@@ -48,7 +48,7 @@ export function DoctorSidebar() {
         </div>
         <div className="leading-tight">
           <span className="block font-display text-lg font-semibold text-ink-900">
-            MedCare
+            AarogyaAI
           </span>
           <span className="block text-[11px] font-medium uppercase tracking-wide text-ink-500">
             Doctor

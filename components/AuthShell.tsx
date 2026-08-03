@@ -51,7 +51,7 @@ export function AuthShell({ children }: { children: React.ReactNode }) {
             <HeartPulse className="h-5 w-5" />
           </div>
           <span className="font-display text-lg font-semibold tracking-tight">
-            MedCare
+            AarogyaAI
           </span>
         </div>
 
@@ -80,7 +80,7 @@ export function AuthShell({ children }: { children: React.ReactNode }) {
         </div>
 
         <p className="relative z-10 text-xs text-brand-200/70">
-          © {new Date().getFullYear()} MedCare Hospital Management System
+          © {new Date().getFullYear()} AarogyaAI Hospital Management System
         </p>
       </div>
 

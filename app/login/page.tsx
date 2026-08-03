@@ -63,7 +63,7 @@ export default function LoginPage() {
           <HeartPulse className="h-5 w-5" />
         </div>
         <span className="font-display text-lg font-semibold text-ink-900">
-          MedCare
+          AarogyaAI
         </span>
       </div>
 

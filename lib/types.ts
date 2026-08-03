@@ -31,6 +31,7 @@ export interface DoctorResponse {
   doctorName: string;
   email: string;
   phone: string;
+  departmentId: number;
   departmentName: string;
   specialization: string;
   experienceYears: number;
@@ -227,4 +228,13 @@ export interface PaymentOrder {
   currency: string;
   keyId: string;
   billId: number;
+}
+
+export interface NotificationItem {
+  id: number;
+  message: string;
+  type: string;
+  link: string | null;
+  isRead: boolean;
+  createdAt: string;
 }

@@ -23,7 +23,7 @@ const mono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "MedCare | Patient Portal",
+  title: "AarogyaAI | Patient Portal",
   description: "Book appointments, view records and bills — all in one place.",
 };
 

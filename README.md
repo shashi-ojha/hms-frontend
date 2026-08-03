@@ -1,4 +1,4 @@
-# 🏥 MedCare — Patient Portal (Next.js)
+# 🏥 AarogyaAI — Patient Portal (Next.js)
 
 A modern patient-facing frontend for the Hospital Management System
 Spring Boot API — book appointments, view medical records, prescriptions

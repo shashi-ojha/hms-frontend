@@ -36,7 +36,7 @@ export function PayNowButton({
         key: order.keyId,
         amount: order.amountInPaise,
         currency: order.currency,
-        name: "MedCare Hospital",
+        name: "AarogyaAI Hospital",
         description: `Bill payment · ${bill.doctorName}`,
         order_id: order.orderId,
         prefill: {

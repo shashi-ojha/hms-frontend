@@ -5,6 +5,7 @@ import { ChevronDown, KeyRound, LogOut, UserCircle2 } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 import { initials } from "@/lib/format";
 import { ChangePasswordModal } from "@/components/ChangePasswordModal";
+import { NotificationBell } from "@/components/NotificationBell";
 
 export function Topbar({
   title,
@@ -30,7 +31,9 @@ export function Topbar({
         )}
       </div>
 
-      <div className="relative">
+      <div className="flex items-center gap-3">
+        <NotificationBell />
+        <div className="relative">
         <button
           onClick={() => setOpen((o) => !o)}
           className="flex items-center gap-2.5 rounded-2xl border border-ink-100 bg-white px-2.5 py-1.5 pr-3 shadow-soft"
@@ -78,6 +81,7 @@ export function Topbar({
             </div>
           </>
         )}
+        </div>
       </div>
 
       <ChangePasswordModal
