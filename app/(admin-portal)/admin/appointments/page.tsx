@@ -11,7 +11,8 @@ export default function AdminAppointmentsPage() {
         subtitle="Every appointment across the hospital"
         profileHref="/admin/dashboard"
       />
-      <AppointmentsOverview />
+      {/* ✅ showDelete=true — admin can delete */}
+      <AppointmentsOverview showDelete={true} />
     </>
   );
 }

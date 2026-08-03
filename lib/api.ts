@@ -242,6 +242,17 @@ export async function downloadPatientFileBlob(
   window.URL.revokeObjectURL(url);
 }
 
+// ✅ Download file with JWT token
+export async function downloadFile(fileName: string) {
+  const res = await api.get(
+    `/files/download/${fileName}`,
+    {
+      responseType: "blob",
+    }
+  );
+  return res.data;
+}
+
 // ============================================================
 // Doctor Portal
 // ============================================================
@@ -614,3 +625,110 @@ export async function getTodaysAppointments() {
   const res = await api.get("/appointments/today");
   return res.data;
 }
+
+// Delete appointment (Admin only)
+export async function deleteAppointment(id: number) {
+  const res = await api.delete(`/appointments/${id}`);
+  return res.data;
+}
+
+// Get appointment by ID
+export async function getAppointmentById(id: number) {
+  const res = await api.get(`/appointments/${id}`);
+  return res.data;
+}
+
+// Update patient (Admin)
+export async function updatePatient(
+  id: number,
+  data: {
+    dateOfBirth?: string;
+    bloodGroup?: string;
+    address?: string;
+    emergencyContactName?: string;
+    emergencyContact?: string;
+    medicalHistory?: string;
+  }
+) {
+  const res = await api.put(`/patients/${id}`, data);
+  return res.data;
+}
+
+// Delete patient (Admin)
+export async function deletePatient(id: number) {
+  const res = await api.delete(`/patients/${id}`);
+  return res.data;
+}
+
+// Get all medical records (Admin)
+export async function getAllRecords() {
+  const res = await api.get("/records");
+  return res.data;
+}
+
+// Get prescriptions by record ID
+export async function getPrescriptionsByRecord(recordId: number) {
+  const res = await api.get(
+    `/prescriptions/record/${recordId}`
+  );
+  return res.data;
+}
+
+// Add prescription
+export async function addPrescription(data: {
+  medicalRecordId: number;
+  medicineName: string;
+  dosage: string;
+  duration: string;
+  instructions?: string;
+}) {
+  const res = await api.post("/prescriptions", data);
+  return res.data;
+}
+
+// Get appointments by doctor with pagination
+export async function getAppointmentsByDoctor(
+  doctorId: number,
+  page: number = 0,
+  size: number = 100
+) {
+  const res = await api.get(
+    `/appointments/doctor/${doctorId}?page=${page}&size=${size}`
+  );
+  return res.data;
+}
+
+// Get doctor by ID
+export async function getDoctorById(id: number) {
+  const res = await api.get(`/doctors/${id}`);
+  return res.data;
+}
+
+// Get department by ID
+export async function getDepartmentById(id: number) {
+  const res = await api.get(`/departments/${id}`);
+  return res.data;
+}
+
+// Get bill by appointment ID
+export async function getBillByAppointmentId(
+  appointmentId: number
+) {
+  const res = await api.get(
+    `/bills/appointment/${appointmentId}`
+  );
+  return res.data;
+}
+
+// Get patient files by type
+export async function getPatientFilesByType(
+  patientId: number,
+  fileType: string
+) {
+  const res = await api.get(
+    `/files/patient/${patientId}/type/${fileType}`
+  );
+  return res.data;
+}
+
+

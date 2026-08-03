@@ -10,6 +10,7 @@ import {
   UserCircle2,
   HeartPulse,
   LogOut,
+  FileText,
 } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { useAuth } from "@/lib/auth-context";
@@ -19,6 +20,7 @@ const nav = [
   { href: "/doctor/schedule", label: "Schedule", icon: CalendarClock },
   { href: "/doctor/patients", label: "Patients", icon: Users },
   { href: "/doctor/profile", label: "Profile", icon: UserCircle2 },
+  { href: "/doctor/records", label: "Records", icon: FileText },
 ];
 
 export function DoctorSidebar() {

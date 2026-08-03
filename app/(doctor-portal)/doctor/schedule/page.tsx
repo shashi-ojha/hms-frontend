@@ -156,7 +156,7 @@ export default function SchedulePage() {
                   "flex shrink-0 items-center gap-1.5 rounded-xl border px-3 py-1.5 text-sm font-medium transition text-ink-900",
                   isActive
                     ? "border-brand-600 bg-brand-600 text-white"
-                    : "border-ink-100 bg-white text-ink-600 hover:bg-ink-50"
+                    : "border-ink-100 bg-white text-ink-700 hover:bg-ink-50"
                 )}
               >
                 {tab.label}

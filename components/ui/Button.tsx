@@ -5,7 +5,7 @@ import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/cn";
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: "primary" | "secondary" | "ghost" | "danger";
+  variant?: "primary" | "secondary" | "ghost" | "danger" | "outline";
   size?: "sm" | "md" | "lg";
   loading?: boolean;
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Building2, Plus, Pencil, Trash2 } from "lucide-react";
+import { Building2, Plus, Pencil, Trash2, Eye } from "lucide-react";
 import { Topbar } from "@/components/Topbar";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
@@ -12,6 +12,7 @@ import { DepartmentFormModal } from "@/components/DepartmentFormModal";
 import { useToast } from "@/lib/toast-context";
 import { getDepartments, deleteDepartment } from "@/lib/api";
 import { DepartmentResponse } from "@/lib/types";
+import { useRouter } from "next/navigation";
 
 export default function DepartmentsPage() {
   const { showToast } = useToast();
@@ -21,6 +22,8 @@ export default function DepartmentsPage() {
   const [editing, setEditing] = useState<DepartmentResponse | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<DepartmentResponse | null>(null);
   const [deleting, setDeleting] = useState(false);
+
+  const router = useRouter();
 
   async function load() {
     setLoading(true);
@@ -97,6 +100,11 @@ export default function DepartmentsPage() {
                     <Building2 className="h-5 w-5" />
                   </div>
                   <div className="flex gap-1">
+                    <button onClick={() =>
+                      router.push(`/admin/departments/${d.id}`)
+                    } className="text-ink-700">
+                      <Eye className="h-4 w-4" />
+                    </button>
                     <button
                       onClick={() => openEdit(d)}
                       className="rounded-lg p-1.5 text-ink-500 hover:bg-ink-100 hover:text-ink-900"
