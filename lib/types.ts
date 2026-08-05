@@ -238,3 +238,11 @@ export interface NotificationItem {
   isRead: boolean;
   createdAt: string;
 }
+
+export interface SymptomCheckResult {
+  departmentId: number | null;
+  departmentName: string;
+  explanation: string;
+  urgencyLevel: "LOW" | "MEDIUM" | "HIGH";
+  disclaimer: string;
+}

@@ -9,6 +9,7 @@ import { Skeleton } from "@/components/ui/Skeleton";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Button } from "@/components/ui/Button";
 import { DoctorCard } from "@/components/DoctorCard";
+import { SymptomChecker } from "@/components/SymptomChecker";
 import { BookAppointmentModal } from "@/components/BookAppointmentModal";
 import { getDepartments, searchDoctors } from "@/lib/api";
 import { useToast } from "@/lib/toast-context";
@@ -36,12 +37,14 @@ export default function DoctorsPage() {
     getDepartments().then(setDepartments).catch(() => {});
   }, []);
 
-  async function load() {
+  async function load(overrideDepartmentId?: string) {
     setLoading(true);
     try {
       const data = await searchDoctors({
         name: name || undefined,
-        departmentId: departmentId ? Number(departmentId) : undefined,
+        departmentId: (overrideDepartmentId ?? departmentId)
+          ? Number(overrideDepartmentId ?? departmentId)
+          : undefined,
         available: availableOnly ? true : undefined,
         page,
         size: PAGE_SIZE,
@@ -66,6 +69,17 @@ export default function DoctorsPage() {
     load();
   }
 
+  function handleDepartmentSuggested(departmentName: string) {
+    const match = departments.find(
+      (d) => d.name.toLowerCase() === departmentName.toLowerCase()
+    );
+    if (match) {
+      setDepartmentId(String(match.id));
+      setPage(0);
+      load(String(match.id));
+    }
+  }
+
   async function handleBooked() {
     setSelectedDoctor(null);
     showToast("Appointment booked! Check your dashboard for details.", "success");
@@ -79,6 +93,8 @@ export default function DoctorsPage() {
       />
 
       <div className="space-y-6 px-6 pb-10 lg:px-10">
+        <SymptomChecker onDepartmentSuggested={handleDepartmentSuggested} />
+
         <form
           onSubmit={handleSearch}
           className="grid grid-cols-1 gap-3 rounded-2xl border border-ink-100 bg-white p-4 shadow-card sm:grid-cols-[1fr_1fr_auto_auto]"

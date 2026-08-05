@@ -21,6 +21,7 @@ import type {
   PaymentOrder,
   PrescriptionRequest,
   Role,
+  SymptomCheckResult,
   UserSummary,
 } from "./types";
 
@@ -484,6 +485,13 @@ export async function markNotificationRead(id: number) {
 
 export async function markAllNotificationsRead() {
   await api.put("/notifications/read-all");
+}
+
+export async function checkSymptoms(symptoms: string) {
+  const { data } = await api.post<SymptomCheckResult>("/ai/symptom-check", {
+    symptoms,
+  });
+  return data;
 }
 
 export async function getUsersByRole(role: Role) {

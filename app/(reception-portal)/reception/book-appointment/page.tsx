@@ -19,6 +19,7 @@ import { Button } from "@/components/ui/Button";
 import { Alert } from "@/components/ui/Alert";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Skeleton } from "@/components/ui/Skeleton";
+import { SymptomChecker } from "@/components/SymptomChecker";
 import {
   searchPatients,
   searchDoctors,
@@ -28,7 +29,7 @@ import {
   bookAppointment,
   apiErrorMessage,
 } from "@/lib/api";
-import { PatientResponse, DoctorResponse } from "@/lib/types";
+import { PatientResponse, DoctorResponse, DepartmentResponse } from "@/lib/types";
 import { formatCurrency, initials } from "@/lib/format";
 
 // ─── Types ────────────────────────────────────────────────
@@ -47,7 +48,7 @@ export default function BookAppointmentPage() {
   const [selectedPatient, setSelectedPatient] =
     useState<PatientResponse | null>(null);
   const [searchingPatients, setSearchingPatients] = useState(false);
-
+   const [departmentsResponse, setDepartmentsResponse] = useState<DepartmentResponse[]>([]);
   // ── Doctor ──────────────────────────────────────────────
   const [doctorSearchMode, setDoctorSearchMode] =
     useState<DoctorSearchMode>("department");
@@ -72,6 +73,10 @@ export default function BookAppointmentPage() {
   const [success, setSuccess] = useState(false);
 
   const today = new Date().toISOString().split("T")[0];
+
+  useEffect(() => {
+    getDepartments().then(setDepartmentsResponse).catch(() => {});
+  }, []);
 
   // ── Load departments on mount ────────────────────────────
   useEffect(() => {
@@ -187,6 +192,24 @@ useEffect(() => {
     }
   }
 
+   async function handleDepartmentSuggested(departmentName: string) {
+    const match = departmentsResponse.find(
+      (d) => d.name.toLowerCase() === departmentName.toLowerCase()
+    );
+    setSearchingDoctors(true);
+    try {
+      const data = await searchDoctors({
+        departmentId: match?.id,
+        available: true,
+        size: 10,
+      });
+      setDoctorResults(data.content);
+      setDoctorQuery(departmentName);
+    } finally {
+      setSearchingDoctors(false);
+    }
+  }
+
   // ──────────────────────────────────────────────────────────
   return (
     <>
@@ -206,7 +229,7 @@ useEffect(() => {
             </span>
           </Alert>
         )}
-
+        <SymptomChecker onDepartmentSuggested={handleDepartmentSuggested} />
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
 
           {/* ── Patient picker ────────────────────────────── */}
